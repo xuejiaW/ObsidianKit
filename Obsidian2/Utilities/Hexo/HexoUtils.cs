@@ -232,8 +232,8 @@ public static class HexoUtils
         // Copy the note file to posts directory
         File.Copy(notePath, postPath);
 
-        // Handle associated assets
-        await CopyNoteAssets(notePath, postPath);
+        // Handle associated assets using the unified method
+        await CopyAssetIfExist(notePath, postsDirectory);
 
         return postPath;
     }
@@ -242,6 +242,7 @@ public static class HexoUtils
 
     /// <summary>
     /// Copies associated assets from the note's assets directory to the Hexo post directory if they exist.
+    /// Assets are renamed to Hexo-compatible format during the copy process.
     /// </summary>
     /// <param name="notePath">Path to the note file</param>
     /// <param name="hexoPostsDir">Directory where Hexo posts are stored</param>
@@ -251,39 +252,18 @@ public static class HexoUtils
     /// // Copy assets for a post
     /// await HexoUtils.CopyAssetIfExist(@"C:\Vault\my-article.md", new DirectoryInfo(@"C:\Blog\Posts"));
     /// // This will copy assets from C:\Vault\assets\my-article to C:\Blog\Posts\my_article
+    /// // and rename all asset files to Hexo-compatible format (lowercase, underscores)
     /// </code>
     /// </example>
     public static async Task CopyAssetIfExist(string notePath, DirectoryInfo hexoPostsDir)
     {
         string noteName = Path.GetFileNameWithoutExtension(notePath);
-        string noteAssetsDir = Path.GetDirectoryName(notePath) + @"\assets\" + noteName;
-
-        if (!Path.Exists(noteAssetsDir)) return;
-
-        string postAssetsDir = ConvertPathForHexoPost(hexoPostsDir + "\\" + noteName);
-        if (Directory.Exists(postAssetsDir))
-        {
-            Directory.Delete(postAssetsDir, true);
-        }
-
-        await FileSystemUtils.DeepCopyDirectory(new DirectoryInfo(noteAssetsDir), postAssetsDir);
-    }
-
-    #region Private Helper Methods
-
-    /// <summary>
-    /// Copies and renames assets associated with a note to the corresponding Hexo post directory.
-    /// </summary>
-    /// <param name="notePath">Path to the source note file</param>
-    /// <param name="postPath">Path to the target post file</param>
-    private static async Task CopyNoteAssets(string notePath, string postPath)
-    {
-        string noteName = Path.GetFileNameWithoutExtension(notePath);
-        var noteAssetsDir = new DirectoryInfo(Path.Join($"{Path.GetDirectoryName(notePath)}\\assets\\{noteName}"));
+        var noteAssetsDir = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(notePath) ?? "", "assets", noteName));
 
         if (!noteAssetsDir.Exists) return;
 
-        var postAssetsDir = new DirectoryInfo(postPath.Replace(".md", ""));
+        string postAssetsDirPath = Path.Combine(hexoPostsDir.FullName, ConvertPathForHexoPost(noteName));
+        var postAssetsDir = new DirectoryInfo(postAssetsDirPath);
 
         // Remove existing post assets directory if it exists
         if (postAssetsDir.Exists)
@@ -305,6 +285,8 @@ public static class HexoUtils
             }
         }
     }
+
+    #region Private Helper Methods
 
     /// <summary>
     /// Converts title text to URL-safe fragment identifier by replacing spaces and dots with underscores.

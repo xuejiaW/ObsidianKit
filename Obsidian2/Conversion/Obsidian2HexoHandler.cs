@@ -104,7 +104,6 @@ internal class Obsidian2HexoHandler
         try
         {
             await formatter.Format();
-            await HexoUtils.CopyAssetIfExist(formatter.notePath, hexoPostsDir);
         } catch (Exception e)
         {
             Console.WriteLine($"Error processing formatter for {formatter.postPath}: {e.Message}");
