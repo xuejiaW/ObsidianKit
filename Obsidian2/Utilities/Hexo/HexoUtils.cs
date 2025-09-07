@@ -197,7 +197,7 @@ public static class HexoUtils
     /// </example>
     public static string ConvertToHexoAdmonition(string calloutContent, string type)
     {
-        return $"{{% note {type} %}}\n{calloutContent}\n{{% endnote %}}";
+        return $"{{% note {type} %}}{Environment.NewLine}{calloutContent}{Environment.NewLine}{{% endnote %}}";
     }
 
     /// <summary>

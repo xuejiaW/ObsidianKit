@@ -14,10 +14,13 @@ internal class HexoPostFormatter
     private string m_SrcNotePath = null;
     private string m_DstPostPath = null;
 
-    private enum LinkType { Header, Block }
+    private enum LinkType
+    {
+        Header,
+        Block
+    }
 
     public string postPath => m_DstPostPath;
-    public string notePath => m_SrcNotePath;
 
     public HexoPostFormatter(string srcNotePath, string dstPostPath)
     {
@@ -30,11 +33,17 @@ internal class HexoPostFormatter
         string content = await File.ReadAllTextAsync(m_SrcNotePath);
         string ret = AdmonitionsFormatter.FormatCodeBlockStyle2ButterflyStyle(content);
         ret = AdmonitionsFormatter.FormatMkDocsStyle2ButterflyStyle(ret);
-        ret = Regex.Replace(ret, RegexUtils.obsidianHeaderLink, match => ProcessObsidianLink(match, m_SrcNotePath, LinkType.Header));
-        ret = Regex.Replace(ret, RegexUtils.obsidianBlockLink, match => ProcessObsidianLink(match, m_SrcNotePath, LinkType.Block));
+        ret = Regex.Replace(ret, RegexUtils.obsidianHeaderLink,
+                            match => ProcessObsidianLink(match, m_SrcNotePath, LinkType.Header));
+        ret = Regex.Replace(ret, RegexUtils.obsidianBlockLink,
+                            match => ProcessObsidianLink(match, m_SrcNotePath, LinkType.Block));
         ret = RegexUtils.ReplacePattern(ret, RegexUtils.obsidianBlockId, string.Empty);
         ret = FormatMdLinkToHexoStyle(ret);
         ret = FormatHtmlImagePaths(ret);
+
+        // Normalize line endings to Windows format (CRLF)
+        ret = ret.Replace("\r\n", "\n").Replace("\n", Environment.NewLine);
+
         await File.WriteAllTextAsync(m_DstPostPath, ret);
     }
 
@@ -46,7 +55,8 @@ internal class HexoPostFormatter
         string fragment = match.Groups[3].Value.Replace("%20", " ");
 
         var targetNotePath = ObsidianNoteUtils.ResolveTargetPath(
-            relativePath, srcNotePath, Obsidian2HexoHandler.obsidianTempDir.FullName);
+                                                                 relativePath, srcNotePath,
+                                                                 Obsidian2HexoHandler.obsidianTempDir.FullName);
 
         if (!File.Exists(targetNotePath))
         {
@@ -69,7 +79,7 @@ internal class HexoPostFormatter
     private string CreateQuoteAdmonition(string content, string targetPath)
     {
         var referenceLink = CreateReferenceLink(targetPath);
-        var quoteContent = $"{content}\n{string.Format(ReferenceFooter, referenceLink)}";
+        var quoteContent = $"{content}{Environment.NewLine}{string.Format(ReferenceFooter, referenceLink)}";
 
         return HexoUtils.ConvertToHexoAdmonition(quoteContent, QuoteIcon);
     }

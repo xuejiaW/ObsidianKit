@@ -50,7 +50,7 @@ public static class YAMLUtils
             .Build();
 
         string updatedYaml = serializer.Serialize(metadata);
-        string updatedContent = "---\n" + updatedYaml + "---" + remainingContent;
+        string updatedContent = $"---{Environment.NewLine}{updatedYaml}---{remainingContent}";
 
         File.WriteAllText(filePath, updatedContent);
     }

@@ -97,7 +97,7 @@ public static class MarkdownUtils
     /// </example>
     public static string FormatMarkdownTables(string content)
     {
-        return RegexUtils.ReplacePattern(content, RegexUtils.markdownTableRow, "|\n\n");
+        return RegexUtils.ReplacePattern(content, RegexUtils.markdownTableRow, $"|{Environment.NewLine}{Environment.NewLine}");
     }
 
     /// <summary>

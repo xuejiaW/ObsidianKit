@@ -96,7 +96,7 @@ public class MarkdownUtilsTests
         
         var result = MarkdownUtils.FormatMarkdownTables(markdownContent);
         
-        Assert.That(result, Does.Contain("| Cell 2   |\n\nNext paragraph"));
+        Assert.That(result, Does.Contain($"| Cell 2   |{Environment.NewLine}{Environment.NewLine}Next paragraph"));
     }
 
     [Test]
