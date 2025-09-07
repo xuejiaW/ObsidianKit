@@ -7,10 +7,6 @@ namespace Obsidian2;
 
 internal class HexoPostFormatter
 {
-    private const string QuoteIcon = "'fas fa-quote-left'";
-    private const string ReferenceFooter = "———— {0}";
-    private const string AssetsPrefix = "assets/";
-
     private string m_SrcNotePath = null;
     private string m_DstPostPath = null;
 
@@ -79,9 +75,9 @@ internal class HexoPostFormatter
     private string CreateQuoteAdmonition(string content, string targetPath)
     {
         var referenceLink = CreateReferenceLink(targetPath);
-        var quoteContent = $"{content}{Environment.NewLine}{string.Format(ReferenceFooter, referenceLink)}";
+        var quoteContent = $"{content}{Environment.NewLine}———— {referenceLink}";
 
-        return HexoUtils.ConvertToHexoAdmonition(quoteContent, QuoteIcon);
+        return HexoUtils.ConvertToHexoAdmonition(quoteContent, "'fas fa-quote-left'");
     }
 
     private string CreateReferenceLink(string targetPath)
@@ -113,9 +109,10 @@ internal class HexoPostFormatter
             string srcPath = match.Groups[2].Value;
             string afterSrc = match.Groups[3].Value;
 
-            if (srcPath.StartsWith(AssetsPrefix))
+            string assetsPrefix = "assets/";
+            if (srcPath.StartsWith(assetsPrefix))
             {
-                srcPath = srcPath.Substring(AssetsPrefix.Length);
+                srcPath = srcPath.Substring(assetsPrefix.Length);
             }
 
             string processedPath = "/" + HexoUtils.ConvertPathForHexoAsset(srcPath);

@@ -47,10 +47,12 @@ internal class Obsidian2HexoHandler
 
         await Progress.CreateProgress("Converting Obsidian Notes to Hexo Posts", async progressTask =>
         {
-            progressTask.MaxValue = markdownFiles.Count;
-
             var postFormatters = (await Task.WhenAll(markdownFiles.Select(CreateHexoPostFormatter)))
                                 .Where(f => f != null).ToList();
+            
+            // Set MaxValue to the actual number of files that will be processed
+            progressTask.MaxValue = postFormatters.Count;
+            
             await Task.WhenAll(postFormatters.Select(formatter => ProcessSingleFormatter(formatter, progressTask)));
         });
 
