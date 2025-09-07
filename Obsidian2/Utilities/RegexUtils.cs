@@ -9,13 +9,13 @@ public static class RegexUtils
 {
     #region Obsidian Link Patterns
     /// <summary>
-    /// Matches Obsidian header embed links like: ![text](file.md#header-name)
+    /// Matches Obsidian header embed links like: `![text](filename.md#header-name)`
     /// Groups: [1]=display_text, [2]=file_path, [3]=header_name
     /// </summary>
     public const string obsidianHeaderLink = @"!\[(.*?)\]\((.*?.md)#(?!\^)(.*?)\)";
 
     /// <summary>
-    /// Matches Obsidian block embed links like: ![text](file.md#^abc123)
+    /// Matches Obsidian block embed links like: `![text](filename.md#^abc123)`
     /// Groups: [1]=display_text, [2]=file_path, [3]=block_id_with_caret
     /// </summary>
     public const string obsidianBlockLink = @"!\[(.*?)\]\((.*?.md)#(\^[a-zA-Z0-9]{6})\)";
@@ -27,7 +27,7 @@ public static class RegexUtils
     public const string obsidianBlockId = @"(\^[a-zA-Z0-9]{6})";
 
     /// <summary>
-    /// Matches Markdown links excluding HTTP URLs like: [link text](relative/path)
+    /// Matches Markdown links excluding HTTP URLs like: `[link text](folder/file)`
     /// Groups: [1]=link_text, [2]=relative_path
     /// </summary>
     public const string markdownLink = @"\[(.*?)\]\((?!http)(.*?)\)";
@@ -35,7 +35,7 @@ public static class RegexUtils
 
     #region HTML Patterns
     /// <summary>
-    /// Matches HTML img tags with src attribute like: &lt;img class="..." src="path/image.jpg" alt="..."&gt;
+    /// Matches HTML img tags with src attribute like: &lt;img class="..." src="path/filename.jpg" alt="..."&gt;
     /// Groups: [1]=attributes_before_src, [2]=src_path, [3]=attributes_after_src
     /// </summary>
     public const string htmlImage = @"<img\s+([^>]*?)src=""([^""]*?)""([^>]*?)>";
@@ -49,7 +49,7 @@ public static class RegexUtils
 
     #region Markdown Patterns
     /// <summary>
-    /// Matches Markdown image syntax like: ![alt text](path/to/image.jpg)
+    /// Matches Markdown image syntax like: `![alt text](folder/picture.jpg)`
     /// Groups: [1]=alt_text, [2]=image_path
     /// </summary>
     public const string markdownImage = @"!\[(.*?)\]\((.*?)\)";

@@ -17,6 +17,7 @@ internal class HexoPostFormatter
     private enum LinkType { Header, Block }
 
     public string postPath => m_DstPostPath;
+    public string notePath => m_SrcNotePath;
 
     public HexoPostFormatter(string srcNotePath, string dstPostPath)
     {

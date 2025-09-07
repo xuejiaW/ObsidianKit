@@ -104,7 +104,7 @@ internal class Obsidian2HexoHandler
         try
         {
             await formatter.Format();
-            await CopyAssetIfExist(formatter.postPath);
+            await HexoUtils.CopyAssetIfExist(formatter.notePath, hexoPostsDir);
         } catch (Exception e)
         {
             Console.WriteLine($"Error processing formatter for {formatter.postPath}: {e.Message}");
@@ -113,21 +113,5 @@ internal class Obsidian2HexoHandler
         {
             progressTask.Increment(1);
         }
-    }
-
-    private async Task CopyAssetIfExist(string notePath)
-    {
-        string noteName = Path.GetFileNameWithoutExtension(notePath);
-        string noteAssetsDir = Path.GetDirectoryName(notePath) + @"\assets\" + noteName;
-
-        if (!Path.Exists(noteAssetsDir)) return;
-
-        string postAssetsDir = HexoUtils.ConvertPathForHexoPost(hexoPostsDir + "\\" + noteName);
-        if (Directory.Exists(postAssetsDir))
-        {
-            Directory.Delete(postAssetsDir, true);
-        }
-
-        await FileSystemUtils.DeepCopyDirectory(new DirectoryInfo(noteAssetsDir), postAssetsDir);
     }
 }

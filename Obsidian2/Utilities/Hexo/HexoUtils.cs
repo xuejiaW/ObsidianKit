@@ -11,6 +11,7 @@ namespace Obsidian2.Utilities.Hexo;
 public static class HexoUtils
 {
     #region Path Conversion Methods
+
     /// <summary>
     /// Converts a file path to Hexo-compatible post path format by converting Chinese to Pinyin and normalizing characters.
     /// </summary>
@@ -88,9 +89,11 @@ public static class HexoUtils
     {
         return "/" + Path.GetFileNameWithoutExtension(filePath);
     }
+
     #endregion
 
     #region Link and Content Conversion Methods
+
     /// <summary>
     /// Converts an Obsidian-style link to Hexo-compatible format, handling markdown files, assets, and fragments.
     /// </summary>
@@ -98,7 +101,7 @@ public static class HexoUtils
     /// <param name="linkRelativePath">Relative path from the original link</param>
     /// <param name="notePath">Absolute path to the source note containing the link</param>
     /// <param name="postPath">Absolute path to the target post file</param>
-    /// <returns>Hexo-compatible markdown link in format [text](path#fragment)</returns>
+    /// <returns>Hexo-compatible markdown link in format `[text](filepath#anchor)`</returns>
     /// <example>
     /// <code>
     /// // Convert markdown file link
@@ -126,7 +129,8 @@ public static class HexoUtils
     /// // Returns: "[See above](/notes/#conclusion)"
     /// </code>
     /// </example>
-    public static string ConvertObsidianLinkToHexo(string linkText, string linkRelativePath, string notePath, string postPath)
+    public static string ConvertObsidianLinkToHexo(string linkText, string linkRelativePath, string notePath,
+                                                   string postPath)
     {
         string fragment = "";
 
@@ -220,7 +224,7 @@ public static class HexoUtils
         string postPath = Path.Join(postsDirectory.FullName, ConvertPathForHexoPost(noteName) + ".md");
 
         // Remove existing post if it exists
-        if (File.Exists(postPath)) 
+        if (File.Exists(postPath))
         {
             File.Delete(postPath);
         }
@@ -233,9 +237,40 @@ public static class HexoUtils
 
         return postPath;
     }
+
     #endregion
 
+    /// <summary>
+    /// Copies associated assets from the note's assets directory to the Hexo post directory if they exist.
+    /// </summary>
+    /// <param name="notePath">Path to the note file</param>
+    /// <param name="hexoPostsDir">Directory where Hexo posts are stored</param>
+    /// <returns>Task representing the async operation</returns>
+    /// <example>
+    /// <code>
+    /// // Copy assets for a post
+    /// await HexoUtils.CopyAssetIfExist(@"C:\Vault\my-article.md", new DirectoryInfo(@"C:\Blog\Posts"));
+    /// // This will copy assets from C:\Vault\assets\my-article to C:\Blog\Posts\my_article
+    /// </code>
+    /// </example>
+    public static async Task CopyAssetIfExist(string notePath, DirectoryInfo hexoPostsDir)
+    {
+        string noteName = Path.GetFileNameWithoutExtension(notePath);
+        string noteAssetsDir = Path.GetDirectoryName(notePath) + @"\assets\" + noteName;
+
+        if (!Path.Exists(noteAssetsDir)) return;
+
+        string postAssetsDir = ConvertPathForHexoPost(hexoPostsDir + "\\" + noteName);
+        if (Directory.Exists(postAssetsDir))
+        {
+            Directory.Delete(postAssetsDir, true);
+        }
+
+        await FileSystemUtils.DeepCopyDirectory(new DirectoryInfo(noteAssetsDir), postAssetsDir);
+    }
+
     #region Private Helper Methods
+
     /// <summary>
     /// Copies and renames assets associated with a note to the corresponding Hexo post directory.
     /// </summary>
@@ -245,13 +280,13 @@ public static class HexoUtils
     {
         string noteName = Path.GetFileNameWithoutExtension(notePath);
         var noteAssetsDir = new DirectoryInfo(Path.Join($"{Path.GetDirectoryName(notePath)}\\assets\\{noteName}"));
-        
+
         if (!noteAssetsDir.Exists) return;
 
         var postAssetsDir = new DirectoryInfo(postPath.Replace(".md", ""));
-        
+
         // Remove existing post assets directory if it exists
-        if (postAssetsDir.Exists) 
+        if (postAssetsDir.Exists)
         {
             postAssetsDir.Delete(true);
         }
@@ -270,6 +305,7 @@ public static class HexoUtils
             }
         }
     }
+
     /// <summary>
     /// Converts title text to URL-safe fragment identifier by replacing spaces and dots with underscores.
     /// </summary>
@@ -279,5 +315,6 @@ public static class HexoUtils
     {
         return TextUtils.ConvertDotToUnderscore(TextUtils.ConvertSpaceToUnderscore(titleText));
     }
+
     #endregion
 }

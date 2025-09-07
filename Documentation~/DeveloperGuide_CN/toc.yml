@@ -1,4 +1,13 @@
-- name: Introduction
-  href: introduction.md
-- name: Getting Started
-  href: getting-started.md
+- name: 配置说明
+  href: Configuration.md
+- name: Hexo Butterfly 主题约定规范
+  href: HexoButterflyConventions.md
+  items:
+  - name: 目录结构约定
+    href: HexoButterflyConventions/HexoButterflyFolderConventions.md
+  - name: 文件命名规范
+    href: HexoButterflyConventions/HexoButterflyFileConventions.md
+  - name: 链接格式规范
+    href: HexoButterflyConventions/HexoButterflyLinkConventions.md
+  - name: 告示框格式规范
+    href: HexoButterflyConventions/HexoButterflyAdmonitionConventions.md
