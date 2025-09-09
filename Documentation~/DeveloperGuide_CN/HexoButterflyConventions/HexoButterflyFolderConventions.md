@@ -46,4 +46,4 @@ source/_posts/
 - 需要将 `assets/ArticleName/` 映射为 `article_name/`
 - 文件名需要符合 URL 安全标准
 
-**实现方法：** [`HexoUtils.CreateHexoPostBundle`](xref:Obsidian2.Utilities.Hexo.HexoUtils.CreateHexoPostBundle*) 方法实现完整的目录结构转换。
+**实现方法：** [`HexoUtils.CreateHexoPostBundle`](xref:ObsidianKit.Utilities.Hexo.HexoUtils.CreateHexoPostBundle*) 方法实现完整的目录结构转换。

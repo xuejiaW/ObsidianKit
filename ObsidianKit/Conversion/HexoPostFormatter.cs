@@ -1,0 +1,123 @@
+using System.Text.RegularExpressions;
+using ObsidianKit.Utilities;
+using ObsidianKit.Utilities.Obsidian;
+using ObsidianKit.Utilities.Hexo;
+
+namespace ObsidianKit;
+
+internal class HexoPostFormatter
+{
+    private string m_SrcNotePath = null;
+    private string m_DstPostPath = null;
+
+    private enum LinkType
+    {
+        Header,
+        Block
+    }
+
+    public string postPath => m_DstPostPath;
+
+    public HexoPostFormatter(string srcNotePath, string dstPostPath)
+    {
+        m_SrcNotePath = srcNotePath;
+        m_DstPostPath = dstPostPath;
+    }
+
+    public async Task Format()
+    {
+        string content = await File.ReadAllTextAsync(m_SrcNotePath);
+        string ret = AdmonitionsFormatter.FormatCodeBlockStyle2ButterflyStyle(content);
+        ret = AdmonitionsFormatter.FormatMkDocsStyle2ButterflyStyle(ret);
+        ret = Regex.Replace(ret, RegexUtils.obsidianHeaderLink,
+                            match => ProcessObsidianLink(match, m_SrcNotePath, LinkType.Header));
+        ret = Regex.Replace(ret, RegexUtils.obsidianBlockLink,
+                            match => ProcessObsidianLink(match, m_SrcNotePath, LinkType.Block));
+        ret = RegexUtils.ReplacePattern(ret, RegexUtils.obsidianBlockId, string.Empty);
+        ret = FormatMdLinkToHexoStyle(ret);
+        ret = FormatHtmlImagePaths(ret);
+
+        // Normalize line endings to Windows format (CRLF)
+        ret = ret.Replace("\r\n", "\n").Replace("\n", Environment.NewLine);
+
+        await File.WriteAllTextAsync(m_DstPostPath, ret);
+    }
+
+
+    private string ProcessObsidianLink(Match match, string srcNotePath, LinkType linkType)
+    {
+        // Extract link components directly from regex match
+        string relativePath = match.Groups[2].Value;
+        string fragment = match.Groups[3].Value.Replace("%20", " ");
+
+        var targetNotePath = ObsidianNoteUtils.ResolveTargetPath(
+                                                                 relativePath, srcNotePath,
+                                                                 ObsidianKitHexoHandler.obsidianTempDir.FullName);
+
+        if (!File.Exists(targetNotePath))
+        {
+            Console.WriteLine($"Not Found for relative path {relativePath}");
+            Console.WriteLine($"Not Found for absolute path {targetNotePath}");
+
+            return string.Empty;
+        }
+
+        var extractedContent = linkType == LinkType.Header
+            ? ObsidianNoteUtils.ExtractHeaderContent(targetNotePath, fragment)
+            : ObsidianNoteUtils.ExtractBlockContent(targetNotePath, fragment);
+
+        if (string.IsNullOrEmpty(extractedContent))
+            return string.Empty;
+
+        return CreateQuoteAdmonition(extractedContent, targetNotePath);
+    }
+
+    private string CreateQuoteAdmonition(string content, string targetPath)
+    {
+        var referenceLink = CreateReferenceLink(targetPath);
+        var quoteContent = $"{content}{Environment.NewLine}———— {referenceLink}";
+
+        return HexoUtils.ConvertToHexoAdmonition(quoteContent, "'fas fa-quote-left'");
+    }
+
+    private string CreateReferenceLink(string targetPath)
+    {
+        var title = ObsidianNoteUtils.GetTitle(targetPath);
+
+        if (!ObsidianNoteUtils.IsRequiredToBePublished(targetPath))
+            return title;
+
+        var referencedPostPath = HexoUtils.ConvertPathForHexoPost(HexoUtils.ConvertMdLinkToRelative(targetPath));
+        return $"[{title}]({referencedPostPath})";
+    }
+
+    private string FormatMdLinkToHexoStyle(string content)
+    {
+        return RegexUtils.ReplacePattern(content, RegexUtils.markdownLink, match =>
+        {
+            string linkText = match.Groups[1].Value;
+            string linkRelativePath = match.Groups[2].Value;
+            return HexoUtils.ConvertObsidianLinkToHexo(linkText, linkRelativePath, m_SrcNotePath, m_DstPostPath);
+        });
+    }
+
+    private string FormatHtmlImagePaths(string content)
+    {
+        return RegexUtils.ReplacePattern(content, RegexUtils.htmlImage, match =>
+        {
+            string beforeSrc = match.Groups[1].Value;
+            string srcPath = match.Groups[2].Value;
+            string afterSrc = match.Groups[3].Value;
+
+            string assetsPrefix = "assets/";
+            if (srcPath.StartsWith(assetsPrefix))
+            {
+                srcPath = srcPath.Substring(assetsPrefix.Length);
+            }
+
+            string processedPath = "/" + HexoUtils.ConvertPathForHexoAsset(srcPath);
+
+            return $"<img {beforeSrc}src=\"{processedPath}\"{afterSrc}>";
+        });
+    }
+}

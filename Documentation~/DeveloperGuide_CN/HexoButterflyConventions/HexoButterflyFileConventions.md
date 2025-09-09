@@ -8,7 +8,7 @@
 
 ## md 文件
 
-对于 markdown 文件，我们使用 [`HexoUtils.ConvertPathForHexoPost`](xref:Obsidian2.Utilities.Hexo.HexoUtils.ConvertPathForHexoPost*) 将其转换为符合 Hexo URL 生成规范的文件名。
+对于 markdown 文件，我们使用 [`HexoUtils.ConvertPathForHexoPost`](xref:ObsidianKit.Utilities.Hexo.HexoUtils.ConvertPathForHexoPost*) 将其转换为符合 Hexo URL 生成规范的文件名。
 
 **示例转换：**
 
@@ -23,7 +23,7 @@
 -   仅转换空格为下划线（解决路径问题）
 -   保留中文及其他的特殊字符
 
-**实现方法：** [`HexoUtils.ConvertPathForHexoAsset`](xref:Obsidian2.Utilities.Hexo.HexoUtils.ConvertPathForHexoAsset*)
+**实现方法：** [`HexoUtils.ConvertPathForHexoAsset`](xref:ObsidianKit.Utilities.Hexo.HexoUtils.ConvertPathForHexoAsset*)
 
 **示例转换：**
 

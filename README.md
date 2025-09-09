@@ -1,6 +1,6 @@
-# Obsidian2Hexo
+# ObsidianKit
 
-Obsidian2Hexo is a dot net tool that convert Obsidian vault to Hexo posts.
+ObsidianKit is a dot net tool that convert Obsidian vault to Hexo posts.
 
 The posts in [My blog](https://tuncle.blog/) are all converted by this tool.
 
@@ -44,7 +44,7 @@ dotnet pack
 Then install the tool globally:
 
 ```powershell
-dotnet tool install --global --add-source .\nupkg obsidian2hexo-cli
+dotnet tool install --global --add-source .\nupkg obsidiankit-cli
 ```
 
 ## How to use
@@ -53,13 +53,13 @@ The tool requires two arguments: the path to the Obsidian vault and the path to 
 should follow the following format:
 
 ```bash
-obsidian2hexo-cli --obsidian-vault-dir <ObsidianVaultDir> --hexo-posts-dir <HexoPostDir>
+obsidiankit-cli --obsidian-vault-dir <ObsidianVaultDir> --hexo-posts-dir <HexoPostDir>
 ```
 
 An example call would be:
 
 ```bash
-obsidian2hexo --obsidian-vault-dir C:\Users\wxjwa\Dropbox\PersonalNotes --hexo-posts-dir D:\Github\xuejiaW.github.io\source\_posts
+obsidiankit --obsidian-vault-dir C:\Users\wxjwa\Dropbox\PersonalNotes --hexo-posts-dir D:\Github\xuejiaW.github.io\source\_posts
 ```
 
 ## How it works

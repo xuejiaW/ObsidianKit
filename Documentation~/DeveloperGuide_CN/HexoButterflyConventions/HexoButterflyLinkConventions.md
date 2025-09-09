@@ -1,6 +1,6 @@
 # Hexo Butterfly 链接格式规范
 
-对于 Obsidian 中的链接引用，都将通过函数 [`HexoUtils.ConvertObsidianLinkToHexo`](xref:Obsidian2.Utilities.Hexo.HexoUtils.ConvertObsidianLinkToHexo*) 将其转换为 Hexo Butterfly 主题支持的格式。其主要将处理：
+对于 Obsidian 中的链接引用，都将通过函数 [`HexoUtils.ConvertObsidianLinkToHexo`](xref:ObsidianKit.Utilities.Hexo.HexoUtils.ConvertObsidianLinkToHexo*) 将其转换为 Hexo Butterfly 主题支持的格式。其主要将处理：
 
 - [文档链接转换](#文档链接转换)，诸如 `[Link Text](Relative/Path/To/Document.md)` 的链接
 - [同文档内锚点链接转换](#同文档内锚点链接转换)，诸如 `[See Section](#Section-Title)` 的链接

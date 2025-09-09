@@ -14,7 +14,7 @@
 {% endnote %}
 ```
 
-我们通过函数 [`HexoUtils.ConvertToHexoAdmonition`](xref:Obsidian2.Utilities.Hexo.HexoUtils.ConvertToHexoAdmonition*) 将 Obsidian 中的告示框转换为符合 Butterfly 主题要求的格式：
+我们通过函数 [`HexoUtils.ConvertToHexoAdmonition`](xref:ObsidianKit.Utilities.Hexo.HexoUtils.ConvertToHexoAdmonition*) 将 Obsidian 中的告示框转换为符合 Butterfly 主题要求的格式：
 
 系统支持两种主要的 Admonition 输入格式转换为 Butterfly 主题格式：
 
