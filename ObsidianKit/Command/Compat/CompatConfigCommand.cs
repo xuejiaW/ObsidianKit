@@ -22,7 +22,8 @@ public static class CompatConfigCommand
     {
         if (!listAll) return;
         
-        var config = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+        var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+        var config = convertConfig.GetCommandConfig<CompatConfig>();
         
         Console.WriteLine("Compat Configuration:");
         Console.WriteLine("====================");

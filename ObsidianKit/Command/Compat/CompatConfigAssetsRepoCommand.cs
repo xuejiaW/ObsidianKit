@@ -25,9 +25,10 @@ public static class CompatConfigAssetsRepoCommand
 
         void SetToken(string token)
         {
-            var config = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            var config = convertConfig.GetCommandConfig<CompatConfig>();
             config.AssetsRepo.personalAccessToken = token;
-            ConfigurationMgr.SaveCommandConfig(config);
+            ConfigurationMgr.SaveCommandConfig(convertConfig);
             Console.WriteLine("Assets repository access token has been set.");
         }
     }
@@ -42,9 +43,10 @@ public static class CompatConfigAssetsRepoCommand
 
         void SetOwner(string owner)
         {
-            var config = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            var config = convertConfig.GetCommandConfig<CompatConfig>();
             config.AssetsRepo.repoOwner = owner;
-            ConfigurationMgr.SaveCommandConfig(config);
+            ConfigurationMgr.SaveCommandConfig(convertConfig);
             Console.WriteLine("Assets repository owner has been set.");
         }
     }
@@ -59,9 +61,10 @@ public static class CompatConfigAssetsRepoCommand
 
         void SetName(string name)
         {
-            var config = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            var config = convertConfig.GetCommandConfig<CompatConfig>();
             config.AssetsRepo.repoName = name;
-            ConfigurationMgr.SaveCommandConfig(config);
+            ConfigurationMgr.SaveCommandConfig(convertConfig);
             Console.WriteLine("Assets repository name has been set.");
         }
     }
@@ -76,9 +79,10 @@ public static class CompatConfigAssetsRepoCommand
 
         void SetBranch(string branch)
         {
-            var config = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            var config = convertConfig.GetCommandConfig<CompatConfig>();
             config.AssetsRepo.branchName = branch;
-            ConfigurationMgr.SaveCommandConfig(config);
+            ConfigurationMgr.SaveCommandConfig(convertConfig);
             Console.WriteLine("Assets repository branch has been set.");
         }
     }
@@ -93,9 +97,10 @@ public static class CompatConfigAssetsRepoCommand
 
         void SetImagePath(string path)
         {
-            var config = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            var config = convertConfig.GetCommandConfig<CompatConfig>();
             config.AssetsRepo.imageFolderPath = path;
-            ConfigurationMgr.SaveCommandConfig(config);
+            ConfigurationMgr.SaveCommandConfig(convertConfig);
             Console.WriteLine("Assets repository image path has been set.");
         }
     }

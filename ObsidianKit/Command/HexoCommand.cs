@@ -6,23 +6,23 @@ namespace ObsidianKit;
 
 internal static class HexoCommand
 {
-    static HexoCommand()
-    {
-        ConfigurationMgr.RegisterCommandConfig<HexoConfig>();
-    }
-
     internal static Command CreateCommand()
     {
         var hexoCommand = new Command("hexo", "Converts obsidian notes to hexo posts");
         var obsidianOption = new Option<DirectoryInfo>(name: "--obsidian-vault-dir", description: "Path to the Obsidian vault directory",
-                                                       getDefaultValue: () => new DirectoryInfo(ConfigurationMgr.configuration.obsidianVaultPath ?? ""));
+                                                       getDefaultValue: () => {
+                                                           var path = ConfigurationMgr.GetCommandConfig<ConvertConfig>().obsidianVaultPath;
+                                                           return new DirectoryInfo(string.IsNullOrWhiteSpace(path) ? "." : path);
+                                                       });
 
         var hexoOption = new Option<DirectoryInfo>(name: "--hexo-posts-dir", description: "Path to the Hexo posts directory", getDefaultValue: () =>
         {
             try
             {
-                var hexoConfig = ConfigurationMgr.GetCommandConfig<HexoConfig>();
-                return new DirectoryInfo(hexoConfig.postsPath ?? ".");
+                var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+                var hexoConfig = convertConfig.GetCommandConfig<HexoConfig>();
+                var path = hexoConfig.postsPath;
+                return new DirectoryInfo(string.IsNullOrWhiteSpace(path) ? "." : path);
             }
             catch
             {

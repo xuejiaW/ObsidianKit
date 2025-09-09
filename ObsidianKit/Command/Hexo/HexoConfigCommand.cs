@@ -10,9 +10,11 @@ public static class HexoConfigCommand
         
         var listOption = new Option<bool>("--list", "List Hexo configuration settings");
         configCommand.AddOption(listOption);
-        configCommand.SetHandler(HandleListOption, listOption);
         
         configCommand.AddCommand(HexoConfigPostsDirCommand.CreateCommand());
+        
+        // Set handler only when no subcommands are invoked
+        configCommand.SetHandler(HandleListOption, listOption);
         
         return configCommand;
     }
@@ -21,7 +23,8 @@ public static class HexoConfigCommand
     {
         if (!listAll) return;
         
-        var config = ConfigurationMgr.GetCommandConfig<HexoConfig>();
+        var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+        var config = convertConfig.GetCommandConfig<HexoConfig>();
         
         Console.WriteLine("Hexo Configuration:");
         Console.WriteLine("==================");

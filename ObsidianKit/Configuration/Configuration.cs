@@ -4,9 +4,6 @@ namespace ObsidianKit;
 
 public class Configuration
 {
-    public string obsidianVaultPath { get; set; }
-    public HashSet<string> ignoresPaths { get; set; } = new();
-
     [JsonIgnore]
     public Dictionary<string, ICommandConfig> commandConfigs { get; } = new();
 
@@ -37,5 +34,11 @@ public class Configuration
     public IEnumerable<string> GetRegisteredCommands()
     {
         return commandConfigs.Keys;
+    }
+
+    // Helper method to get convert config and its nested configs
+    public ConvertConfig GetConvertConfig()
+    {
+        return GetCommandConfig<ConvertConfig>();
     }
 }

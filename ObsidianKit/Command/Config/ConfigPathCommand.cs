@@ -16,8 +16,9 @@ public static class ConfigPathCommand
         void SetObsidianVaultDir(DirectoryInfo obsidianVaultDir)
         {
             FileSystemUtils.CheckDirectory(obsidianVaultDir, "Obsidian vault directory");
-            ConfigurationMgr.configuration.obsidianVaultPath = obsidianVaultDir.FullName;
-            ConfigurationMgr.Save();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            convertConfig.obsidianVaultPath = obsidianVaultDir.FullName;
+            ConfigurationMgr.SaveCommandConfig(convertConfig);
             Console.WriteLine("Obsidian vault directory has been set.");
         }
     }

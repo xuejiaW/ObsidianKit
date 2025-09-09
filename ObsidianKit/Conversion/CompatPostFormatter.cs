@@ -25,7 +25,8 @@ internal class CompatPostFormatter
         if (!Directory.Exists(m_AssetsFolderPath)) Directory.CreateDirectory(m_AssetsFolderPath);
 
         InitGitHubUploader();
-        var compatConfig = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+        var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+        var compatConfig = convertConfig.GetCommandConfig<CompatConfig>();
         var repoConfig = compatConfig.AssetsRepo;
         m_GithubRepoPrefix
             = $"https://raw.githubusercontent.com/{repoConfig.repoOwner}/{repoConfig.repoName}/{repoConfig.branchName}/{repoConfig.imageFolderPath}/";
@@ -33,7 +34,8 @@ internal class CompatPostFormatter
 
     private void InitGitHubUploader()
     {
-        var config = ConfigurationMgr.GetCommandConfig<CompatConfig>();
+        var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+        var config = convertConfig.GetCommandConfig<CompatConfig>();
         var repoConfig = config.AssetsRepo;
 
         if (string.IsNullOrWhiteSpace(repoConfig.personalAccessToken) ||

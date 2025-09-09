@@ -7,10 +7,8 @@ namespace ObsidianKit
         private static async Task<int> Main(string[] args)
         {
             var rootCommand = new RootCommand();
-            rootCommand.AddCommand(HexoCommand.CreateCommand());
+            rootCommand.AddCommand(ConvertCommand.CreateCommand());
             rootCommand.AddCommand(ConfigCommand.CreateCommand());
-            rootCommand.AddCommand(CompatCommand.CreateCommand());
-            rootCommand.AddCommand(ZhihuCommand.CreateCommand());
 
             rootCommand.SetHandler(() => { });
 

@@ -24,8 +24,9 @@ public static class ConfigIgnoreCommand
 
         void AddIgnorePath(string path)
         {
-            ConfigurationMgr.configuration.ignoresPaths.Add(path);
-            ConfigurationMgr.Save();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            convertConfig.ignoresPaths.Add(path);
+            ConfigurationMgr.SaveCommandConfig(convertConfig);
             Console.WriteLine($"Added '{path}' to ignore list.");
         }
     }
@@ -40,9 +41,10 @@ public static class ConfigIgnoreCommand
 
         void RemoveIgnorePath(string path)
         {
-            if (ConfigurationMgr.configuration.ignoresPaths.Remove(path))
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            if (convertConfig.ignoresPaths.Remove(path))
             {
-                ConfigurationMgr.Save();
+                ConfigurationMgr.SaveCommandConfig(convertConfig);
                 Console.WriteLine($"Removed '{path}' from ignore list.");
             }
             else
@@ -61,7 +63,8 @@ public static class ConfigIgnoreCommand
         void PrintAllIgnorePaths()
         {
             Console.WriteLine("Files in the following paths will not be processed:");
-            var ignorePaths = ConfigurationMgr.configuration.ignoresPaths.ToList();
+            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
+            var ignorePaths = convertConfig.ignoresPaths.ToList();
             if (ignorePaths.Any())
             {
                 ignorePaths.ForEach(Console.WriteLine);

@@ -5,11 +5,11 @@ namespace ObsidianKit;
 
 public static class ConfigurationMgr
 {
-    private static readonly Dictionary<string, Type> RegisteredTypes = new();
-
     private static string s_ConfigurationPath = null;
 
     public static string configurationPath => s_ConfigurationPath ??= Path.Join(configurationFolder, "configuration.json");
+
+    private static readonly Dictionary<string, Type> RegisteredTypes = GetCommandConfigTypes();
 
     private static string configurationFolder
     {
@@ -56,10 +56,28 @@ public static class ConfigurationMgr
         PropertyNameCaseInsensitive = true
     };
 
-    public static void RegisterCommandConfig<T>() where T : class, ICommandConfig, new()
+    private static Dictionary<string, Type> GetCommandConfigTypes()
     {
-        var instance = new T();
-        RegisteredTypes[instance.CommandName] = typeof(T);
+        var types = new Dictionary<string, Type>();
+        var assembly = Assembly.GetExecutingAssembly();
+        
+        foreach (var type in assembly.GetTypes())
+        {
+            if (type.IsClass && !type.IsAbstract && typeof(ICommandConfig).IsAssignableFrom(type))
+            {
+                try
+                {
+                    var instance = (ICommandConfig)Activator.CreateInstance(type);
+                    types[instance.CommandName] = type;
+                }
+                catch
+                {
+                    // Skip types that can't be instantiated
+                }
+            }
+        }
+        
+        return types;
     }
 
     public static Configuration Load()
@@ -73,57 +91,10 @@ public static class ConfigurationMgr
 
             var config = new Configuration();
 
-            if (root.TryGetProperty("obsidianVaultPath", out var vaultPath))
-                config.obsidianVaultPath = vaultPath.GetString();
-
-            if (root.TryGetProperty("ignoresPaths", out var ignorePaths))
-            {
-                config.ignoresPaths = ignorePaths.Deserialize<HashSet<string>>(JsonOptions) ?? new HashSet<string>();
-            }
-
             // Load command configurations
             if (root.TryGetProperty("commandConfigs", out var commandConfigs))
             {
-                foreach (var commandProp in commandConfigs.EnumerateObject())
-                {
-                    var commandName = commandProp.Name;
-                    var commandJson = commandProp.Value;
-
-                    // Check if this command config has type information
-                    if (commandJson.TryGetProperty("$type", out var typeElement))
-                    {
-                        var typeName = typeElement.GetString();
-                        if (RegisteredTypes.Values.Any(t => t.Name == typeName))
-                        {
-                            var configType = RegisteredTypes.Values.First(t => t.Name == typeName);
-
-                            // Create a new JSON object without the $type property
-                            var configData = new Dictionary<string, object>();
-                            foreach (var prop in commandJson.EnumerateObject())
-                            {
-                                if (prop.Name != "$type") configData[prop.Name] = prop.Value;
-                            }
-
-                            var cleanJsonText = JsonSerializer.Serialize(configData, JsonOptions);
-                            var commandConfig = (ICommandConfig)JsonSerializer.Deserialize(cleanJsonText, configType, JsonOptions);
-                            if (commandConfig != null)
-                            {
-                                commandConfig.SetDefaults();
-                                config.commandConfigs[commandName] = commandConfig;
-                            }
-                        }
-                    }
-                    else if (RegisteredTypes.TryGetValue(commandName, out var registeredType))
-                    {
-                        // Fallback: use registered type for this command name
-                        var commandConfig = (ICommandConfig)JsonSerializer.Deserialize(commandJson.GetRawText(), registeredType, JsonOptions);
-                        if (commandConfig != null)
-                        {
-                            commandConfig.SetDefaults();
-                            config.commandConfigs[commandName] = commandConfig;
-                        }
-                    }
-                }
+                LoadCommandConfigs(commandConfigs, config.commandConfigs);
             }
 
             return config;
@@ -135,32 +106,55 @@ public static class ConfigurationMgr
         }
     }
 
+    private static void LoadCommandConfigs(JsonElement commandConfigs, Dictionary<string, ICommandConfig> targetConfigs)
+    {
+        foreach (var commandProp in commandConfigs.EnumerateObject())
+        {
+            var commandName = commandProp.Name;
+            var commandJson = commandProp.Value;
+
+            if (!commandJson.TryGetProperty("$type", out var typeElement))
+                continue;
+
+            var typeName = typeElement.GetString();
+            var configType = RegisteredTypes.Values.FirstOrDefault(t => t.Name == typeName);
+            if (configType == null)
+                continue;
+
+            // Create a new JSON object without the $type property
+            var configData = new Dictionary<string, object>();
+            foreach (var prop in commandJson.EnumerateObject())
+            {
+                if (prop.Name != "$type") 
+                    configData[prop.Name] = prop.Value;
+            }
+
+            var cleanJsonText = JsonSerializer.Serialize(configData, JsonOptions);
+            var commandConfig = (ICommandConfig)JsonSerializer.Deserialize(cleanJsonText, configType, JsonOptions);
+            if (commandConfig == null)
+                continue;
+
+            commandConfig.SetDefaults();
+            
+            // Handle nested command configs for ConvertConfig
+            if (commandConfig is ConvertConfig convertConfig && 
+                commandJson.TryGetProperty("commandConfigs", out var nestedConfigs))
+            {
+                LoadCommandConfigs(nestedConfigs, convertConfig.commandConfigs);
+            }
+            
+            targetConfigs[commandName] = commandConfig;
+        }
+    }
+
     public static void Save()
     {
         try
         {
-            var commandConfigsWithTypes = new Dictionary<string, object>();
-            foreach (var kvp in configuration.commandConfigs)
-            {
-                var configType = kvp.Value.GetType();
-                var configData = JsonSerializer.SerializeToElement(kvp.Value, configType, JsonOptions);
-
-                var configWithType = new Dictionary<string, object>();
-                configWithType["$type"] = configType.Name;
-
-                // Add all properties from the original config
-                foreach (var prop in configData.EnumerateObject())
-                {
-                    configWithType[prop.Name] = prop.Value;
-                }
-
-                commandConfigsWithTypes[kvp.Key] = configWithType;
-            }
+            var commandConfigsWithTypes = SerializeCommandConfigs(configuration.commandConfigs);
 
             var configToSave = new
             {
-                obsidianVaultPath = configuration.obsidianVaultPath,
-                ignoresPaths = configuration.ignoresPaths,
                 commandConfigs = commandConfigsWithTypes
             };
 
@@ -171,6 +165,38 @@ public static class ConfigurationMgr
         {
             Console.WriteLine($"Error saving configuration: {ex.Message}");
         }
+    }
+
+    private static Dictionary<string, object> SerializeCommandConfigs(Dictionary<string, ICommandConfig> commandConfigs)
+    {
+        var commandConfigsWithTypes = new Dictionary<string, object>();
+        
+        foreach (var kvp in commandConfigs)
+        {
+            var configType = kvp.Value.GetType();
+            var configData = JsonSerializer.SerializeToElement(kvp.Value, configType, JsonOptions);
+
+            var configWithType = new Dictionary<string, object>();
+            configWithType["$type"] = configType.Name;
+
+            // Add all properties from the original config
+            foreach (var prop in configData.EnumerateObject())
+            {
+                // Handle nested command configs for ConvertConfig
+                if (prop.Name == "commandConfigs" && kvp.Value is ConvertConfig convertConfig)
+                {
+                    configWithType[prop.Name] = SerializeCommandConfigs(convertConfig.commandConfigs);
+                }
+                else
+                {
+                    configWithType[prop.Name] = prop.Value;
+                }
+            }
+
+            commandConfigsWithTypes[kvp.Key] = configWithType;
+        }
+
+        return commandConfigsWithTypes;
     }
 
     public static void UpdateConfiguration(Configuration newConfiguration)

@@ -7,8 +7,6 @@ internal static class ZhihuCommand
 {
     internal static Command CreateCommand()
     {
-        Configuration configuration = ConfigurationMgr.configuration;
-
         var zhihuCommand = new Command("zhihu", "Converts mathematical formulas in markdown files for Zhihu platform");
 
         var inputOption = new Option<FileInfo>(name: "--input", description: "Path to the markdown file to convert");
