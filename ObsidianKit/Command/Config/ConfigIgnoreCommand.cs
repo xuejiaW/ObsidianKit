@@ -7,7 +7,7 @@ public static class ConfigIgnoreCommand
 {
     internal static Command CreateCommand()
     {
-        var ignoreCommand = new Command("ignore", "Manage ignored paths");
+        var ignoreCommand = new Command("ignore", "Manage global ignored paths");
         ignoreCommand.AddCommand(CreateAddCommand());
         ignoreCommand.AddCommand(CreateRemoveCommand());
         ignoreCommand.AddCommand(CreateListCommand());
@@ -16,62 +16,67 @@ public static class ConfigIgnoreCommand
 
     private static Command CreateAddCommand()
     {
-        var addCommand = new Command("add", "Add a path to the ignore list");
-        var pathArg = new Argument<string>("path", "Path to ignore");
+        var addCommand = new Command("add", "Add a path to the global ignore list");
+        var pathArg = new Argument<string>("path", "Path to ignore globally");
         addCommand.AddArgument(pathArg);
         addCommand.SetHandler(AddIgnorePath, pathArg);
         return addCommand;
 
         void AddIgnorePath(string path)
         {
-            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
-            convertConfig.ignoresPaths.Add(path);
-            ConfigurationMgr.SaveCommandConfig(convertConfig);
-            Console.WriteLine($"Added '{path}' to ignore list.");
+            var config = ConfigurationMgr.configuration;
+            config.globalIgnoresPaths.Add(path);
+            ConfigurationMgr.Save();
+            Console.WriteLine($"Added '{path}' to global ignore list.");
         }
     }
 
     private static Command CreateRemoveCommand()
     {
-        var removeCommand = new Command("remove", "Remove a path from the ignore list");
-        var pathArg = new Argument<string>("path", "Path to remove from ignore list");
+        var removeCommand = new Command("remove", "Remove a path from the global ignore list");
+        var pathArg = new Argument<string>("path", "Path to remove from global ignore list");
         removeCommand.AddArgument(pathArg);
         removeCommand.SetHandler(RemoveIgnorePath, pathArg);
         return removeCommand;
 
         void RemoveIgnorePath(string path)
         {
-            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
-            if (convertConfig.ignoresPaths.Remove(path))
+            var config = ConfigurationMgr.configuration;
+            if (config.globalIgnoresPaths.Remove(path))
             {
-                ConfigurationMgr.SaveCommandConfig(convertConfig);
-                Console.WriteLine($"Removed '{path}' from ignore list.");
+                ConfigurationMgr.Save();
+                Console.WriteLine($"Removed '{path}' from global ignore list.");
             }
             else
             {
-                Console.WriteLine($"Path '{path}' was not found in ignore list.");
+                Console.WriteLine($"Path '{path}' was not found in the global ignore list.");
             }
         }
     }
 
     private static Command CreateListCommand()
     {
-        var listCommand = new Command("list", "List all ignored paths");
+        var listCommand = new Command("list", "List all global ignored paths");
         listCommand.SetHandler(PrintAllIgnorePaths);
         return listCommand;
 
         void PrintAllIgnorePaths()
         {
-            Console.WriteLine("Files in the following paths will not be processed:");
-            var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
-            var ignorePaths = convertConfig.ignoresPaths.ToList();
+            Console.WriteLine("Global Ignored Paths:");
+            Console.WriteLine("(These paths are ignored across all operations)");
+            var config = ConfigurationMgr.configuration;
+            var ignorePaths = config.globalIgnoresPaths.ToList();
             if (ignorePaths.Any())
             {
-                ignorePaths.ForEach(Console.WriteLine);
+                ignorePaths.Sort();
+                for (int i = 0; i < ignorePaths.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {ignorePaths[i]}");
+                }
             }
             else
             {
-                Console.WriteLine("No paths are currently ignored.");
+                Console.WriteLine("No paths are currently being ignored globally.");
             }
         }
     }

@@ -91,6 +91,12 @@ public static class ConfigurationMgr
 
             var config = new Configuration();
 
+            // Load global ignore paths
+            if (root.TryGetProperty("globalIgnoresPaths", out var globalIgnores))
+            {
+                config.globalIgnoresPaths = globalIgnores.Deserialize<HashSet<string>>(JsonOptions) ?? new HashSet<string>();
+            }
+
             // Load command configurations
             if (root.TryGetProperty("commandConfigs", out var commandConfigs))
             {
@@ -155,6 +161,7 @@ public static class ConfigurationMgr
 
             var configToSave = new
             {
+                globalIgnoresPaths = configuration.globalIgnoresPaths,
                 commandConfigs = commandConfigsWithTypes
             };
 

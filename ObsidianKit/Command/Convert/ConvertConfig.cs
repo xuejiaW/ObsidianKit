@@ -5,7 +5,7 @@ public class ConvertConfig : ICommandConfig
     public string CommandName => "convert";
     
     public string obsidianVaultPath { get; set; }
-    public HashSet<string> ignoresPaths { get; set; } = new();
+    public HashSet<string> convertIgnoresPaths { get; set; } = new();
     
     // Nested command configs for convert subcommands
     public Dictionary<string, ICommandConfig> commandConfigs { get; } = new();
@@ -41,8 +41,11 @@ public class ConvertConfig : ICommandConfig
 
     public void SetDefaults()
     {
-        obsidianVaultPath = "";
-        ignoresPaths = new HashSet<string> { ".git", ".obsidian", ".trash" };
+        if (string.IsNullOrEmpty(obsidianVaultPath))
+            obsidianVaultPath = "";
+            
+        if (convertIgnoresPaths == null || !convertIgnoresPaths.Any())
+            convertIgnoresPaths = new HashSet<string> { ".excalidraw.md" };
     }
 
     public bool Validate(out List<string> errors)
@@ -63,16 +66,16 @@ public class ConvertConfig : ICommandConfig
 
     public void DisplayConfiguration()
     {
-        Console.WriteLine("Convert Command Configuration:");
-        Console.WriteLine($"  Obsidian Vault Path: {obsidianVaultPath ?? "Not set"}");
-        Console.WriteLine($"  Ignored Paths: [{string.Join(", ", ignoresPaths)}]");
+        Console.WriteLine("  Convert Command Configuration:");
+        Console.WriteLine($"    Obsidian Vault Path: {obsidianVaultPath ?? "Not set"}");
+        Console.WriteLine($"    Convert Ignored Paths: [{string.Join(", ", convertIgnoresPaths)}]");
         
         if (commandConfigs.Any())
         {
-            Console.WriteLine("  Sub-command Configurations:");
+            Console.WriteLine("    Sub-commands:");
             foreach (var config in commandConfigs.Values)
             {
-                Console.WriteLine($"    - {config.CommandName}");
+                Console.WriteLine($"      • {config.CommandName}");
                 config.DisplayConfiguration();
             }
         }

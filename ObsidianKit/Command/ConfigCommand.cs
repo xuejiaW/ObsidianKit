@@ -33,12 +33,11 @@ public static class ConfigCommand
         if (!listAll) return;
 
         var config = ConfigurationMgr.configuration;
-        var convertConfig = config.GetConvertConfig();
 
         Console.WriteLine("Global Configuration:");
         Console.WriteLine("=====================");
-        Console.WriteLine($"Obsidian Vault Path: {convertConfig.obsidianVaultPath ?? "Not set"}");
-        Console.WriteLine($"Ignored Paths: {(convertConfig.ignoresPaths.Any() ? string.Join(", ", convertConfig.ignoresPaths) : "None")}");
+        Console.WriteLine($"Global Ignored Paths: [{string.Join(", ", config.globalIgnoresPaths)}]");
+        Console.WriteLine("(These paths are ignored across all operations)");
 
         if (showAllCommands)
         {
@@ -48,7 +47,7 @@ public static class ConfigCommand
 
             foreach (var commandConfig in config.commandConfigs.Values)
             {
-                Console.WriteLine($"\n--- {commandConfig.CommandName} ---");
+                Console.WriteLine($"\n└── {commandConfig.CommandName}");
                 commandConfig.DisplayConfiguration();
             }
         }

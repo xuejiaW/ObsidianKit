@@ -27,8 +27,9 @@ internal class ObsidianKitHexoHandler
         Status.CreateStatus("Making backup", () =>
         {
             var convertConfig = ConfigurationMgr.GetCommandConfig<ConvertConfig>();
-            FileSystemUtils.DeepCopyDirectory(obsidianVaultDir, obsidianTempDir.FullName,
-                                              convertConfig.ignoresPaths.ToList()).Wait();
+            var config = ConfigurationMgr.configuration;
+            var allIgnorePaths = config.globalIgnoresPaths.Concat(convertConfig.convertIgnoresPaths).ToList();
+            FileSystemUtils.DeepCopyDirectory(obsidianVaultDir, obsidianTempDir.FullName, allIgnorePaths).Wait();
         });
 
         await ConvertObsidianNoteToHexoPostBundles();

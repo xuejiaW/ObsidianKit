@@ -1,27 +1,35 @@
 {
+    "globalIgnoresPaths": [
+        ".git",
+        ".obsidian",
+        ".trash",
+        "50_Readwise",
+        "51_WeChatBooks", 
+        "100_Kanban",
+        "200_Projects",
+        "Plugins"
+    ],
     "commandConfigs": {
         "convert": {
             "$type": "ConvertConfig",
             "obsidianVaultPath": "C:\\Users\\wxjwa\\Dropbox\\PersonalNotes",
-            "ignoresPaths": [
-                ".git",
-                ".obsidian",
-                ".trash"
+            "convertIgnoresPaths": [
+                ".excalidraw.md"
             ],
             "commandConfigs": {
                 "compat": {
                     "$type": "CompatConfig",
                     "AssetsRepo": {
-                        "PersonalAccessToken": "",
+                        "PersonalAccessToken": "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",
                         "RepoOwner": "xuejiaW",
-                        "RepoName": "ObsidianKitImageRepo",
+                        "RepoName": "Obsidian2ImageRepo",
                         "BranchName": "main",
                         "ImageBasePath": "images"
                     }
                 },
                 "hexo": {
                     "$type": "HexoConfig",
-                    "postsPath": "D:\\Github\\xuejiaW.github.io\\source\\_posts"
+                    "postsPath": "D:\\Github\\Personal\\xuejiaW.github.io\\source\\_posts"
                 }
             }
         }

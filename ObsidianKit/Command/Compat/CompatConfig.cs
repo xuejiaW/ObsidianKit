@@ -31,14 +31,13 @@ public class CompatConfig : ICommandConfig
 
     public void DisplayConfiguration()
     {
-        Console.WriteLine("Compat Configuration:");
-        Console.WriteLine("====================");
-        Console.WriteLine("Assets Repository:");
-        Console.WriteLine($"  Owner: {AssetsRepo.repoOwner ?? "Not set"}");
-        Console.WriteLine($"  Name: {AssetsRepo.repoName ?? "Not set"}");
-        Console.WriteLine($"  Branch: {AssetsRepo.branchName}");
-        Console.WriteLine($"  Image Path: {AssetsRepo.imageFolderPath}");
-        Console.WriteLine($"  Access Token: {(string.IsNullOrEmpty(AssetsRepo.personalAccessToken) ? "Not set" : "***")}");
+        Console.WriteLine("        Compat Configuration:");
+        Console.WriteLine("          Assets Repository:");
+        Console.WriteLine($"            Owner: {AssetsRepo.repoOwner ?? "Not set"}");
+        Console.WriteLine($"            Name: {AssetsRepo.repoName ?? "Not set"}");
+        Console.WriteLine($"            Branch: {AssetsRepo.branchName}");
+        Console.WriteLine($"            Image Path: {AssetsRepo.imageFolderPath}");
+        Console.WriteLine($"            Access Token: {(string.IsNullOrEmpty(AssetsRepo.personalAccessToken) ? "Not set" : "***")}");
     }
 }
 

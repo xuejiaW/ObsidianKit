@@ -4,6 +4,8 @@ namespace ObsidianKit;
 
 public class Configuration
 {
+    public HashSet<string> globalIgnoresPaths { get; set; } = new() { ".git", ".obsidian", ".trash" };
+
     [JsonIgnore]
     public Dictionary<string, ICommandConfig> commandConfigs { get; } = new();
 
