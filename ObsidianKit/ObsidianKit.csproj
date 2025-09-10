@@ -2,13 +2,13 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+        <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>ObsidianKit</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <PackAsTool>true</PackAsTool>
-        <ToolCommandName>obsidiankit</ToolCommandName>
-        <Version>0.2.1</Version>
+        <ToolCommandName>obk</ToolCommandName>
+        <Version>0.2.3</Version>
         <PackageOutputPath>./nupkg</PackageOutputPath>
         <NoWarn>$(NoWarn);NETSDK1138;CS0649</NoWarn>
     </PropertyGroup>    <ItemGroup>
