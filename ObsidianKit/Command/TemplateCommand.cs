@@ -8,14 +8,13 @@ internal static class TemplateCommand
     internal static Command CreateCommand()
     {
         var templateCommand = new Command("template", "Manage and apply Obsidian vault templates");
-        
+
         // Add subcommands
         templateCommand.AddCommand(CreateListCommand());
         templateCommand.AddCommand(CreateCreateCommand());
         templateCommand.AddCommand(CreateApplyCommand());
         templateCommand.AddCommand(CreateRemoveCommand());
-        templateCommand.AddCommand(CreateSetDefaultVaultCommand());
-        
+
         return templateCommand;
     }
 
@@ -29,63 +28,42 @@ internal static class TemplateCommand
     private static Command CreateCreateCommand()
     {
         var createCommand = new Command("create", "Create a new template from an Obsidian vault");
-        
+
         var nameArg = new Argument<string>("name", "Name of the template");
-        var sourceVaultArg = new Argument<DirectoryInfo?>("source-vault", 
-            description: "Path to the source Obsidian vault", 
-            getDefaultValue: () => {
-                var templateConfig = ConfigurationMgr.GetCommandConfig<TemplateConfig>();
-                var path = templateConfig.defaultVaultPath;
-                return string.IsNullOrWhiteSpace(path) ? null : new DirectoryInfo(path);
-            });
-            
+        var sourceVaultArg
+            = new Argument<DirectoryInfo>("source-vault", description: "Path to the source Obsidian vault");
+
         createCommand.AddArgument(nameArg);
         createCommand.AddArgument(sourceVaultArg);
         createCommand.SetHandler(HandleCreateTemplate, nameArg, sourceVaultArg);
-        
+
         return createCommand;
     }
 
     private static Command CreateApplyCommand()
     {
         var applyCommand = new Command("apply", "Apply a template to an Obsidian vault");
-        
+
         var nameArg = new Argument<string>("name", "Name of the template to apply");
-        var targetFolderArg = new Argument<DirectoryInfo?>("target-folder", 
-            description: "Path to the target Obsidian vault",
-            getDefaultValue: () => {
-                var templateConfig = ConfigurationMgr.GetCommandConfig<TemplateConfig>();
-                var path = templateConfig.defaultVaultPath;
-                return string.IsNullOrWhiteSpace(path) ? null : new DirectoryInfo(path);
-            });
-            
+        var targetFolderArg = new Argument<DirectoryInfo>("target-folder",
+                                                          description: "Path to the target Obsidian vault");
+
         applyCommand.AddArgument(nameArg);
         applyCommand.AddArgument(targetFolderArg);
         applyCommand.SetHandler(HandleApplyTemplate, nameArg, targetFolderArg);
-        
+
         return applyCommand;
     }
 
     private static Command CreateRemoveCommand()
     {
         var removeCommand = new Command("remove", "Remove a configured template");
-        
+
         var nameArg = new Argument<string>("name", "Name of the template to remove");
         removeCommand.AddArgument(nameArg);
         removeCommand.SetHandler(HandleRemoveTemplate, nameArg);
-        
-        return removeCommand;
-    }
 
-    private static Command CreateSetDefaultVaultCommand()
-    {
-        var setDefaultVaultCommand = new Command("set-default-vault", "Set the default Obsidian vault path for template operations");
-        
-        var vaultPathArg = new Argument<DirectoryInfo>("vault-path", "Path to the default Obsidian vault");
-        setDefaultVaultCommand.AddArgument(vaultPathArg);
-        setDefaultVaultCommand.SetHandler(HandleSetDefaultVault, vaultPathArg);
-        
-        return setDefaultVaultCommand;
+        return removeCommand;
     }
 
     private static void HandleListTemplates()
@@ -98,7 +76,7 @@ internal static class TemplateCommand
         if (!templateConfig.templates.Any())
         {
             Console.WriteLine("No templates configured.");
-            Console.WriteLine("\nUse 'obsidiankit template create <name> [source-vault]' to create a new template.");
+            Console.WriteLine("\nUse 'obk template create <name> [source-vault]' to create a new template.");
             return;
         }
 
@@ -109,7 +87,7 @@ internal static class TemplateCommand
         }
     }
 
-    private static void HandleCreateTemplate(string name, DirectoryInfo? sourceVault)
+    private static void HandleCreateTemplate(string name, DirectoryInfo sourceVault)
     {
         if (sourceVault == null)
         {
@@ -148,7 +126,7 @@ internal static class TemplateCommand
         Console.WriteLine($"Template '{name}' created successfully from '{sourceVault.FullName}'");
     }
 
-    private static async Task HandleApplyTemplate(string name, DirectoryInfo? targetFolder)
+    private static async Task HandleApplyTemplate(string name, DirectoryInfo targetFolder)
     {
         if (targetFolder == null)
         {
@@ -177,15 +155,14 @@ internal static class TemplateCommand
         // Create target directory if it doesn't exist
         if (!targetFolder.Exists)
             targetFolder.Create();
-        
+
         FileSystemUtils.CheckDirectory(targetFolder, "Target folder");
 
         try
         {
             await ApplyTemplateToVault(templatePath, targetFolder.FullName);
             Console.WriteLine($"Template '{name}' applied successfully to '{targetFolder.FullName}'");
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             Console.WriteLine($"Error applying template: {ex.Message}");
         }
@@ -207,17 +184,6 @@ internal static class TemplateCommand
         Console.WriteLine($"Template '{name}' removed successfully.");
     }
 
-    private static void HandleSetDefaultVault(DirectoryInfo vaultPath)
-    {
-        FileSystemUtils.CheckDirectory(vaultPath, "Vault directory");
-
-        var templateConfig = ConfigurationMgr.GetCommandConfig<TemplateConfig>();
-        templateConfig.defaultVaultPath = vaultPath.FullName;
-        ConfigurationMgr.SaveCommandConfig(templateConfig);
-
-        Console.WriteLine($"Default vault path set to: {vaultPath.FullName}");
-    }
-
     private static async Task ApplyTemplateToVault(string templatePath, string targetPath)
     {
         var obsidianConfigSource = Path.Combine(templatePath, ".obsidian");
@@ -230,7 +196,7 @@ internal static class TemplateCommand
         if (Directory.Exists(obsidianConfigSource))
         {
             Console.WriteLine("Copying .obsidian configuration...");
-            
+
             // Backup existing configuration if it exists
             if (Directory.Exists(obsidianConfigTarget))
             {
@@ -238,7 +204,7 @@ internal static class TemplateCommand
                 Directory.Move(obsidianConfigTarget, backupPath);
                 Console.WriteLine($"Existing .obsidian configuration backed up to: {backupPath}");
             }
-            
+
             await FileSystemUtils.DeepCopyDirectory(new DirectoryInfo(obsidianConfigSource), obsidianConfigTarget);
         }
 
@@ -246,7 +212,7 @@ internal static class TemplateCommand
         if (Directory.Exists(pluginsSource))
         {
             Console.WriteLine("Copying Obsidian-Plugins...");
-            
+
             // Backup existing plugins if they exist
             if (Directory.Exists(pluginsTarget))
             {
@@ -254,7 +220,7 @@ internal static class TemplateCommand
                 Directory.Move(pluginsTarget, backupPath);
                 Console.WriteLine($"Existing Obsidian-Plugins backed up to: {backupPath}");
             }
-            
+
             await FileSystemUtils.DeepCopyDirectory(new DirectoryInfo(pluginsSource), pluginsTarget);
         }
     }

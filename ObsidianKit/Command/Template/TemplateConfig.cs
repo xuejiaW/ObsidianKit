@@ -7,17 +7,9 @@ public class TemplateConfig : ICommandConfig
     [JsonIgnore]
     public string CommandName => "template";
 
-    public string defaultVaultPath { get; set; } = "";
     public Dictionary<string, string> templates { get; set; } = new();
 
-    public void SetDefaults()
-    {
-        if (templates == null)
-            templates = new Dictionary<string, string>();
-        
-        if (string.IsNullOrEmpty(defaultVaultPath))
-            defaultVaultPath = "";
-    }
+    public void SetDefaults() { templates ??= new Dictionary<string, string>(); }
 
     public bool Validate(out List<string> errors)
     {
@@ -38,7 +30,6 @@ public class TemplateConfig : ICommandConfig
     public void DisplayConfiguration()
     {
         Console.WriteLine("        Template Configuration:");
-        Console.WriteLine($"          Default Vault Path: {defaultVaultPath ?? "Not set"}");
         if (templates.Any())
         {
             Console.WriteLine("          Available Templates:");
@@ -65,11 +56,6 @@ public class TemplateConfig : ICommandConfig
 
     public string GetTemplatePath(string name)
     {
-        return templates.TryGetValue(name, out var path) ? path : null;
-    }
-
-    public IEnumerable<string> GetTemplateNames()
-    {
-        return templates.Keys;
+        return templates.GetValueOrDefault(name);
     }
 }
