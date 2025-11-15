@@ -124,8 +124,9 @@ internal static class TemplateCommand
         var obsidianConfigPath = Path.Combine(sourceVault.FullName, ".obsidian");
         if (!Directory.Exists(obsidianConfigPath))
         {
-            Console.WriteLine($"Warning: No .obsidian folder found in {sourceVault.FullName}");
-            Console.WriteLine("This might not be a valid Obsidian vault.");
+            Console.WriteLine($"Error: No .obsidian folder found in {sourceVault.FullName}");
+            Console.WriteLine("The source vault must contain a .obsidian folder to be used as a template.");
+            return;
         }
 
         var templateConfig = ConfigurationMgr.GetCommandConfig<TemplateConfig>();
