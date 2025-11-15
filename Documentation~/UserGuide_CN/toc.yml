@@ -1,6 +1,6 @@
 - name: Introduction
-  href: introduction.md
-- name: Getting Started
-  href: getting-started.md
+  href: Introduction.md
+- name: Template 命令
+  href: TemplateCommand.md
 - name: Config 命令
   href: config.md
