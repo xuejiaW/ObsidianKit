@@ -15,6 +15,7 @@ obsidian2 config --help
 ```
 
 **输出示例：**
+
 ```
 Description:
   Manage configuration settings
@@ -48,6 +49,7 @@ obsidian2 config --list
 ```
 
 **输出示例：**
+
 ```
 Global Configuration:
 =====================
@@ -68,6 +70,7 @@ obsidian2 config --list --a
 如下输出带有 `hexo` 和 `compat` 的配置项。
 
 **输出示例：**
+
 ```
 Global Configuration:
 =====================
@@ -99,13 +102,14 @@ Posts Directory: D:\Test\Posts
 
 ### obsidian-vault-dir - 设置 Obsidian 库地址
 
-设置 Obsidian 笔记库的根目录路径，参数 `<directory>` 为库的绝对路径，后续的所有命令都将基于该路径进行操作。
+设置 Obsidian 笔记库的根目录路径，参数 `<directory>` 为库的绝对路径，几乎后续的所有命令都将基于该路径进行操作（除了诸如 [Template](TemplateCommand.md) 命令等不依赖于具体库路径的命令）。
 
 ```bash
 obsidian2 config obsidian-vault-dir <directory>
 ```
 
 **示例：**
+
 ```bash
 obsidian2 config obsidian-vault-dir "C:\Users\username\Documents\MyNotes"
 ```
@@ -121,6 +125,7 @@ obsidian2 config ignore list
 ```
 
 **输出示例：**
+
 ```
 Files in the following paths will not be processed:
 .git
@@ -135,6 +140,7 @@ obsidian2 config ignore add <path>
 ```
 
 **示例：**
+
 ```bash
 obsidian2 config ignore add "temp"
 obsidian2 config ignore add ".backup"
@@ -147,6 +153,7 @@ obsidian2 config ignore remove <path>
 ```
 
 **示例：**
+
 ```bash
 obsidian2 config ignore remove "temp"
 ```
@@ -160,12 +167,15 @@ obsidian2 config export [filename] [选项]
 ```
 
 **参数：**
-- `[filename]` - 输出文件名（可选，默认为 obsidian2-config.json）
+
+-   `[filename]` - 输出文件名（可选，默认为 obsidian2-config.json）
 
 **选项：**
-- `--output-dir <directory>` - 输出目录（可选，默认为当前目录）
+
+-   `--output-dir <directory>` - 输出目录（可选，默认为当前目录）
 
 **示例：**
+
 ```bash
 # 导出到默认文件名
 obsidian2 config export
@@ -178,6 +188,7 @@ obsidian2 config export my-config.json --output-dir "D:\Backups"
 ```
 
 **输出示例：**
+
 ```
 Configuration exported successfully to: D:\Github\Personal\Obsidian2\Obsidian2\bin\Debug\net8.0\test-config.json
 ```
@@ -191,13 +202,16 @@ obsidian2 config import <filename> [选项]
 ```
 
 **参数：**
-- `<filename>` - 要导入的 JSON 配置文件
+
+-   `<filename>` - 要导入的 JSON 配置文件
 
 **选项：**
-- `--backup` - 导入前创建当前配置的备份（默认：False）
-- `--force` - 强制导入，跳过确认提示（默认：False）
+
+-   `--backup` - 导入前创建当前配置的备份（默认：False）
+-   `--force` - 强制导入，跳过确认提示（默认：False）
 
 **示例：**
+
 ```bash
 # 基本导入（会提示确认）
 obsidian2 config import my-config.json
@@ -210,6 +224,7 @@ obsidian2 config import my-config.json --backup
 ```
 
 **输出示例：**
+
 ```
 Current configuration backed up to: D:\MyWork\obsidian2-config-backup-20250831-140706.json
 Configuration imported successfully from: my-config.json
@@ -218,14 +233,14 @@ Configuration imported successfully from: my-config.json
 > [!note]
 >
 > 可通过 import 和 export 命令进行配置的备份与恢复。
-> 
+>
 > **重要变更：** 从当前版本开始，导入配置时默认**不会自动创建备份**。如需备份当前配置，请使用 `--backup` 选项。
-> 
+>
 > **备份路径：** 备份文件使用绝对路径显示，保存在命令执行时的当前工作目录中。
 
 ## 相关命令
 
-- `obsidian2 hexo config` - 管理 Hexo 相关配置
-- `obsidian2 compat config` - 管理兼容性相关配置
+-   `obsidian2 hexo config` - 管理 Hexo 相关配置
+-   `obsidian2 compat config` - 管理兼容性相关配置
 
 更多信息请参考各子命令的专用文档。

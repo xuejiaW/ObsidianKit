@@ -162,7 +162,8 @@ internal static class TemplateCommand
         {
             await ApplyTemplateToVault(templatePath, targetFolder.FullName);
             Console.WriteLine($"Template '{name}' applied successfully to '{targetFolder.FullName}'");
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             Console.WriteLine($"Error applying template: {ex.Message}");
         }
