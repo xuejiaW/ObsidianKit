@@ -11,6 +11,7 @@ namespace ObsidianKit
             rootCommand.AddCommand(ConfigCommand.CreateCommand());
             rootCommand.AddCommand(TemplateCommand.CreateCommand());
             rootCommand.AddCommand(DoctorCommand.CreateCommand());
+            rootCommand.AddCommand(BackupCommand.CreateCommand());
 
             rootCommand.SetHandler(() => { });
 
