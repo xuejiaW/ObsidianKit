@@ -9,6 +9,7 @@ internal static class DoctorCommand
         var doctorCommand = new Command("doctor", "Diagnose and fix Obsidian vault issues");
 
         doctorCommand.AddCommand(DoctorConflictCommand.CreateCommand());
+        doctorCommand.AddCommand(DoctorCleanCommand.CreateCommand());
 
         return doctorCommand;
     }
