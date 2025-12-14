@@ -8,6 +8,8 @@ public class BackupConfig : ICommandConfig
     public string CommandName => "backup";
 
     public string backupDirectory { get; set; }
+    
+    public HashSet<string> ignorePaths { get; set; } = new();
 
     public void SetDefaults()
     {
@@ -16,6 +18,11 @@ public class BackupConfig : ICommandConfig
             backupDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "ObsidianBackups");
+        }
+        
+        if (ignorePaths == null)
+        {
+            ignorePaths = new HashSet<string>();
         }
     }
 
@@ -29,5 +36,6 @@ public class BackupConfig : ICommandConfig
     {
         Console.WriteLine("        Backup Configuration:");
         Console.WriteLine($"          Backup Directory: {backupDirectory}");
+        Console.WriteLine($"          Ignored Paths: {string.Join(", ", ignorePaths)}");
     }
 }

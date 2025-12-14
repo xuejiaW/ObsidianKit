@@ -78,7 +78,7 @@ internal static class BackupCommand
         try
         {
             var allFiles = Directory.GetFiles(vaultPath, "*.*", SearchOption.AllDirectories);
-            var ignorePaths = globalConfig.globalIgnoresPaths;
+            var ignorePaths = backupConfig.ignorePaths;
 
             var filesToBackup = allFiles
                 .Where(file => !ignorePaths.Any(ignore =>
