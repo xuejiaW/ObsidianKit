@@ -2,59 +2,129 @@
 
 `obk doctor` 命令用于诊断和修复 Obsidian 仓库中的问题。
 
-## conflict - 检测和解决冲突文件
+## 子命令列表
+
+Doctor 命令提供以下子命令，用于诊断和修复不同类型的问题：
+
+### [conflict](Doctor/ConflictCommand.md) - 检测和解决冲突文件
+
+检测并解决云同步工具（如 Dropbox、OneDrive）产生的冲突文件。
 
 ```bash
 obk doctor conflict [--vault-dir <path>]
 ```
 
-检测并解决云同步工具（如 Dropbox、OneDrive）产生的冲突文件。
+**主要功能：**
+- 扫描所有目录查找冲突文件
+- 按文件分组显示冲突
+- 智能识别最新/最大的文件
+- 提供交互式解决方案
 
-**参数：**
-- `--vault-dir <path>`: 可选，指定 Obsidian 仓库路径。如果不指定，将使用配置中的路径。
+[查看详细文档 →](Doctor/ConflictCommand.md)
 
-**检测规则：**
+---
 
-扫描所有目录，查找格式为 `(设备名's conflicted copy YYYY-MM-DD)` 的文件，例如：
-- `note (HomePC's conflicted copy 2025-12-14).md`
-- `workspace (Surface's conflicted copy 2024-08-03).json`
+### [clean](Doctor/CleanCommand.md) - 清理未引用的图片
 
-**解决策略：**
-
-冲突文件按原始文件名分组，命令会标记内容最多的文件（⭐ LARGEST），并提供交互式解决：
-
-1. 如果最大文件是冲突文件且原始文件存在：删除原始文件，重命名冲突文件，删除其他冲突文件
-2. 如果最大文件是冲突文件但原始文件不存在：重命名冲突文件，删除其他冲突文件
-3. 如果最大文件是原始文件：删除所有冲突文件
-
-**示例：**
+查找并清理 Obsidian 仓库中未被任何笔记引用的图片文件。
 
 ```bash
-# 使用配置的仓库路径
+obk doctor clean [--vault-dir <path>]
+```
+
+**主要功能：**
+- 扫描所有 Markdown 文件中的图片引用
+- 识别未被引用的图片
+- 安全地移动到 `.trash` 文件夹
+- 显示释放的空间大小
+
+[查看详细文档 →](Doctor/CleanCommand.md)
+
+---
+
+### [bloat](Doctor/BloatCommand.md) - 检测过大的资源文件
+
+检测 Obsidian 仓库中过大的资源文件，帮助识别需要优化的内容。
+
+```bash
+obk doctor bloat [--vault-dir <path>]
+```
+
+**主要功能：**
+- 按文件类型检查大小限制
+- 表格形式显示超标文件
+- 分页显示大量结果
+- 支持自定义大小阈值和忽略模式
+
+[查看详细文档 →](Doctor/BloatCommand.md)
+
+---
+
+## 快速开始
+
+```bash
+# 检查并修复冲突文件
 obk doctor conflict
+
+# 清理未引用的图片
+obk doctor clean
+
+# 检测过大的文件
+obk doctor bloat
 
 # 指定仓库路径
 obk doctor conflict --vault-dir D:\MyVault
+obk doctor clean --vault-dir D:\MyVault
+obk doctor bloat --vault-dir D:\MyVault
 ```
 
-**输出示例：**
+## 配置仓库路径
 
+如果不想每次都指定 `--vault-dir`，可以配置默认路径：
+
+```bash
+obk config vault-dir D:\MyVault
 ```
-Found 9 conflict files in 6 groups:
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Group: .obsidian\workspace.json
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ workspace.json (Original)
-    Lines: 296 | Characters: 9,796
-  • workspace (HomePC's conflicted copy 2025-12-14).json ⭐ LARGEST
-    Lines: 338 | Characters: 11,324
+配置后，所有 doctor 命令都会使用该路径。
 
-Do you want to automatically resolve conflicts? (y/N):
+## 推荐工作流
+
+### 定期维护
+```bash
+# 每周运行一次，保持仓库整洁
+obk doctor conflict  # 解决同步冲突
+obk doctor bloat     # 检查大文件
+obk doctor clean     # 清理无用图片
 ```
+
+### 发布前检查
+```bash
+# 发布博客前的清理
+obk doctor bloat     # 确保没有过大的文件
+obk doctor clean     # 移除未使用的资源
+```
+
+### 迁移/整理时
+```bash
+# 重构笔记结构后
+obk doctor conflict  # 解决可能的冲突
+obk doctor clean     # 清理旧的图片引用
+```
+
+## 安全特性
+
+所有 doctor 命令都设计了安全机制：
+
+- ✅ **交互式确认**：重要操作前需要用户确认
+- ✅ **不直接删除**：文件移动到 `.trash` 而非永久删除
+- ✅ **详细信息**：显示完整的文件列表和大小
+- ✅ **可恢复**：从 `.trash` 可以随时恢复文件
 
 ## 注意事项
 
-- 删除和重命名操作不可撤销，建议操作前手动备份
-- 通过字符数和行数判断内容量（字符数 > 行数）
-- 可对每个冲突组单独选择是否处理
+- 建议在运行 doctor 命令前备份重要数据
+- 查看输出信息，确认操作符合预期
+- 定期清空 `.trash` 文件夹释放空间
+- 可以配合使用多个子命令，达到最佳效果
+

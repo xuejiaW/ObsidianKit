@@ -1,0 +1,8 @@
+- name: Doctor
+  items:
+  - name: Conflict Command
+    href: ConflictCommand.md
+  - name: Clean Command
+    href: CleanCommand.md
+  - name: Bloat Command
+    href: BloatCommand.md
