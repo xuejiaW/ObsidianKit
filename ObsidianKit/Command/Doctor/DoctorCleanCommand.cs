@@ -1,4 +1,5 @@
 using System.CommandLine;
+using ObsidianKit.Utilities;
 using ObsidianKit.Utilities.Obsidian;
 
 namespace ObsidianKit;
@@ -44,13 +45,13 @@ internal static class DoctorCleanCommand
         {
             var img = unreferencedImages[i];
             var relativePath = Path.GetRelativePath(vaultPath, img.filePath);
-            var size = FormatFileSize(img.fileSize);
+            var size = FileSizeUtils.FormatSize(img.fileSize);
             Console.WriteLine($"[{i + 1}] {relativePath,-60} {size,10}");
             totalSize += img.fileSize;
         }
 
         Console.WriteLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        Console.WriteLine($"Total size: {FormatFileSize(totalSize)}");
+        Console.WriteLine($"Total size: {FileSizeUtils.FormatSize(totalSize)}");
         Console.WriteLine();
 
         Console.Write("Move these files to .trash folder? (y/N): ");
@@ -98,8 +99,8 @@ internal static class DoctorCleanCommand
             .Sum(f => new FileInfo(f).Length);
 
         Console.WriteLine();
-        Console.WriteLine($"Moved {movedCount} file(s) to .trash, freed {FormatFileSize(movedSize)}");
-        Console.WriteLine($"Current .trash size: {FormatFileSize(trashSize)}");
+        Console.WriteLine($"Moved {movedCount} file(s) to .trash, freed {FileSizeUtils.FormatSize(movedSize)}");
+        Console.WriteLine($"Current .trash size: {FileSizeUtils.FormatSize(trashSize)}");
     }
 
     private static string GetVaultPath(DirectoryInfo vaultDir)
@@ -112,18 +113,5 @@ internal static class DoctorCleanCommand
             return convertConfig.obsidianVaultPath;
 
         throw new ArgumentException("Vault directory not specified and not configured. Use --vault-dir or configure with 'obk config obsidian-vault-dir'");
-    }
-
-    private static string FormatFileSize(long bytes)
-    {
-        string[] sizes = { "B", "KB", "MB", "GB" };
-        double len = bytes;
-        int order = 0;
-        while (len >= 1024 && order < sizes.Length - 1)
-        {
-            order++;
-            len = len / 1024;
-        }
-        return $"{len:0.##} {sizes[order]}";
     }
 }
