@@ -6,3 +6,5 @@
     href: CleanCommand.md
   - name: Bloat Command
     href: BloatCommand.md
+  - name: Format Command
+    href: FormatCommand.md

@@ -11,6 +11,7 @@ internal static class DoctorCommand
         doctorCommand.AddCommand(DoctorConflictCommand.CreateCommand());
         doctorCommand.AddCommand(DoctorCleanCommand.CreateCommand());
         doctorCommand.AddCommand(DoctorBloatCommand.CreateCommand());
+        doctorCommand.AddCommand(DoctorFormatCommand.CreateCommand());
 
         return doctorCommand;
     }
